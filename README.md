@@ -10,12 +10,12 @@ Requirements:
 
 * Python3
 * Python3-pip
-* mido (Can be installed using pip)
+* mido and colour (Can be installed using pip)
 
 ```
 opkg update
 opkg install python3-pip
-pip3 install mido
+pip3 install mido colour
 ```
 
 Now you should be able to run `tlo-midi.py` script. Input must be midi file. If

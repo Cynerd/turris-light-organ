@@ -6,6 +6,8 @@ import os
 import time
 import argparse
 import mido
+import copy
+from colour import Color 
 
 # Parse arguments
 parser = argparse.ArgumentParser(description='Turris leds midi track player')
@@ -23,9 +25,9 @@ if args.c is not None:
 test_run = False
 if args.t is not None:
     test_run = args.t
-color = '0xF00'  # In default use red
+color = Color('#FF0000')  # In default use red
 if args.d is not None:
-    color = args.d[0]
+    color = Color(args.d[0])
 
 # Load midi file
 midi = mido.MidiFile(midi_file)
@@ -45,6 +47,16 @@ for msg in midi:
             cut_top = msg.note
 if cut_bottom is None or cut_top is None:
     raise Exception("Midi file seems to contain no audio data")
+
+
+def calc_color(intens):
+    # intens is 0..127
+    multi = intens/127
+    clr = Color(color)
+    clr.red = clr.red * multi
+    clr.green = clr.green * multi
+    clr.blue = clr.blue * multi
+    return clr.get_hex_l()[1:]
 
 rainbow_led = (
         'pwr',
@@ -68,15 +80,14 @@ def output_line():
         line = ""
         for i in range(0, 12):
             # We divide velocity by 13 to ensure resolution of 0-9
-            # (velocity is 1..128)
+            # (velocity is 1..127)
             line = line + str(int(data_line[i]/13))
         print(line)
     else:
         cmd = "rainbow "
         for i in range(0, 12):
-            cmd = cmd + rainbow_led[i] + " " + color + " intensity "
-            # Here range is from 0-100
-            cmd = cmd + str(int(data_line[i]/1.28)) + " "
+            clr = calc_color(data_line[i])
+            cmd = cmd + rainbow_led[i] + " " + clr + " "
         os.system(cmd)
 
 
