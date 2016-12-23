@@ -4,6 +4,11 @@ Simple script to blink with Turris leds to music. There is for now only
 implementation using midi, but second implementation using wave and FFT is
 planned.
 
+Note: Before executing any of these scripts make sure that you have all leds
+enabled: `rainbow all enable`
+
+To reset to previous configuration of your leds run: `/etc/init.d/rainbow restart`
+
 midi
 ----
 Requirements:
