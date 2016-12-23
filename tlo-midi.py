@@ -103,20 +103,24 @@ def note_to_line(note):
     return int(note / threshold - 1)
 
 
-def note(note, velocity, time_suspend, off=False):
+def note(note, velocity, off=False):
     if off:
         velocity = 0
-    time.sleep(time_suspend)  # Suspend for given delay
     data_line[note_to_line(note)] = velocity
 
 
 # Now do the work
+work_time = int(time.time()*1000000)
 for msg in midi:
     if (msg.type == "note_on" or msg.type == "note_off") and \
             msg.channel == channel:
-        note(msg.note, msg.velocity, msg.time, msg.type == "note_off")
+        note(msg.note, msg.velocity, msg.type == "note_off")
     elif args.v:
         print("Ignoring message: " + str(msg))
+    work_time = work_time + int(msg.time*1000000)
+    # Lets use busy delay to minimalize possibility of missing it
+    while work_time > int(time.time()*1000000):
+        pass
     output_line()
 
 # Note: We are not handling beats at all. This just waits for given time when it's
