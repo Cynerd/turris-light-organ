@@ -12,7 +12,8 @@ from colour import Color
 # Parse arguments
 parser = argparse.ArgumentParser(description='Turris leds midi track player')
 parser.add_argument('-c', nargs=1, type=int, help="Choose channel")
-parser.add_argument('-d', nargs=1, type=str, help="Color in format 0xFFF")
+parser.add_argument('-d', nargs=1, type=str, help="Color in format #FFFFFF")
+parser.add_argument('-v', action='store_true', help="Print verbose messages")
 parser.add_argument('-t', action='store_true',
                     help="If it is test run (print output to console)")
 parser.add_argument('FILE', nargs=1, type=str, help="Midi audio file")
@@ -114,7 +115,7 @@ for msg in midi:
     if (msg.type == "note_on" or msg.type == "note_off") and \
             msg.channel == channel:
         note(msg.note, msg.velocity, msg.time, msg.type == "note_off")
-    else:
+    elif args.v:
         print("Ignoring message: " + str(msg))
     output_line()
 
